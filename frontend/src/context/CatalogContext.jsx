@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { MENU_CATEGORIES, MENU_ITEMS } from '../data/menuItems.js'
-import { apiRequest, djangoApiRequest } from '../services/apiClient.js'
+import { apiRequest } from '../services/apiClient.js'
 
 const CatalogContext = createContext(null)
 
@@ -15,7 +15,7 @@ export function CatalogProvider({ children }) {
 
   const refreshCatalog = useCallback(async (signal) => {
     try {
-      const result = await djangoApiRequest('/menu/', { signal })
+      const result = await apiRequest('/menu', { signal })
       setCategories(result.categories.map((category) => category.slug))
       setCategoryNames(Object.fromEntries(result.categories.map((category) => [category.slug, category.names])))
       setMenuItems(result.items.map((item) => ({

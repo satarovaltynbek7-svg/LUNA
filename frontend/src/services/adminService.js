@@ -1,4 +1,4 @@
-import { apiRequest, djangoApiRequest } from './apiClient.js'
+import { apiRequest } from './apiClient.js'
 
 const request = (path, method = 'GET', body, signal) => apiRequest(`/admin/${path}`, {
   method,
@@ -27,7 +27,7 @@ export const saveBanner = (banner, id) => request(`banners${id ? `/${encodeURICo
 export const deleteBanner = (id) => request(`banners/${encodeURIComponent(id)}`, 'DELETE')
 
 export function createCustomerOrder({ items, tableNumber, customerName, customerPhone, address, note }) {
-  return djangoApiRequest('/orders/', {
+  return apiRequest('/orders', {
     method: 'POST',
     body: { items, tableNumber, customerName, customerPhone, address, note },
   })
