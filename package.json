@@ -7,14 +7,14 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "vite",
-    "server:dev": "node --watch server/index.js",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "node server/index.js",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev"
+    "dev": "vite --config frontend/vite.config.js",
+    "server:dev": "node --watch backend/server/index.js",
+    "build": "vite build --config frontend/vite.config.js",
+    "preview": "vite preview --config frontend/vite.config.js",
+    "start": "node backend/server/index.js",
+    "db:generate": "prisma generate --schema backend/prisma/schema.prisma",
+    "db:migrate": "prisma migrate deploy --schema backend/prisma/schema.prisma",
+    "db:migrate:dev": "prisma migrate dev --schema backend/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

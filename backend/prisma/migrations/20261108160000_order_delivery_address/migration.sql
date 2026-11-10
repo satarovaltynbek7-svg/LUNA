@@ -1,0 +1,1 @@
+ALTER TABLE "CafeOrder" ADD COLUMN "address" VARCHAR(300);

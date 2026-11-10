@@ -9,8 +9,8 @@ services:
     name: luna-cafe
     runtime: node
     plan: starter
-    buildCommand: npm ci --include=dev && npx prisma generate && npm run build
-    preDeployCommand: npx prisma migrate deploy
+    buildCommand: npm ci --include=dev && npm run db:generate && npm run build
+    preDeployCommand: npm run db:migrate
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -27,6 +27,8 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
+        sync: false
+      - key: VITE_DJANGO_API_URL
         sync: false
       - key: BACKEND_URL
         sync: false
@@ -47,4 +49,25 @@ services:
       - key: SMTP_PASSWORD
         sync: false
       - key: SMTP_FROM
+        sync: false
+
+  - type: web
+    name: luna-cafe-django
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r backend/django_backend/requirements.txt
+    startCommand: cd backend/django_backend && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn luna_backend.wsgi:application --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/health/
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: luna-cafe-db
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
         sync: false
