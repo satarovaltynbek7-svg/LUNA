@@ -17,14 +17,14 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
-body { margin: 0; min-width: 320px; }
+body { margin: 0; min-width: 320px; padding-top: 82px; }
 body, button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
 img { display: block; width: 100%; }
 ::selection { color: var(--cream); background: var(--muted); }
 
-.site-header { height: 82px; position: relative; z-index: 5; background: var(--cream); }
+.site-header { height: 82px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--cream); }
 .header-inner { width: min(100% - 112px, 1440px); height: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: inline-flex; align-items: center; gap: 9px; color: var(--espresso); }
 .brand__moon { font-size: 30px; line-height: 1; transform: rotate(-35deg); }
@@ -257,6 +257,7 @@ img { display: block; width: 100%; }
 
 @media (max-width: 680px) {
   html { scroll-padding-top: 68px; }
+  body { padding-top: 68px; }
   .site-header { height: 68px; }
   .header-inner { width: calc(100% - 40px); }
   .brand__moon { font-size: 27px; }
