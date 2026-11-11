@@ -312,7 +312,7 @@ export default function App() {
       <ScrollReveal />
       <AuthModal />
       <AuthNotice />
-      <ChatBot />
+      {/* <ChatBot /> */}
     </>
   )
 }
