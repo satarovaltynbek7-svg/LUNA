@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { prisma } from '../db.js'
 import { ApiError, asyncHandler } from '../lib/errors.js'
+import { sendWhatsApp } from '../lib/whatsapp.js'
 import { orderCreateSchema } from '../middleware/validation.js'
 
 const router = Router()
@@ -38,6 +39,27 @@ router.post('/', asyncHandler(async (req, res) => {
       include: { lines: true },
     })
   })
+
+  // Send WhatsApp notification (non-blocking)
+  const linesSummary = order.lines
+    .map((line) => `  • ${line.itemNames?.ru || line.itemNames?.en || '—'} x${line.quantity} = ${line.lineTotal} сом`)
+    .join('\n')
+  const msg = [
+    '🛒 *Новый заказ LUNA Café*',
+    `🆔 #${order.id.slice(0, 8).toUpperCase()}`,
+    input.customerName ? `👤 ${input.customerName}` : '',
+    input.customerPhone ? `📞 ${input.customerPhone}` : '',
+    input.address ? `📍 ${input.address}` : '',
+    input.tableNumber ? `🪑 Стол №${input.tableNumber}` : '',
+    '',
+    linesSummary,
+    '',
+    `💰 Итого: ${order.total} сом`,
+    input.note ? `📝 ${input.note}` : '',
+  ].filter(Boolean).join('\n')
+
+  sendWhatsApp(msg)
+
   res.status(201).json({ order: { id: order.id, status: order.status, total: order.total } })
 }))
 
