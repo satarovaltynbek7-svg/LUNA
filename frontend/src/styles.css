@@ -1285,7 +1285,7 @@ body * { transition: color .22s ease, background-color .22s ease, border-color .
 
 .main-nav__actions, .main-nav__auth { display: flex; align-items: center; }
 .main-nav__actions { gap: 8px; white-space: nowrap; }
-.main-nav__auth { gap: 7px; display: none; }
+.main-nav__auth { gap: 7px; }
 .auth-header__login, .auth-header__register { min-height: 42px; padding: 0 15px; border-radius: 999px; font: inherit; font-size: 10px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
 .auth-header__login { border: 1px solid var(--line); color: var(--espresso); background: transparent; }
 .auth-header__register { border: 1px solid var(--espresso); color: var(--cream); background: var(--espresso); }
