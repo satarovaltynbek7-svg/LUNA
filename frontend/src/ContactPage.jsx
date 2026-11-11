@@ -44,21 +44,6 @@ function ReservationForm() {
     event.preventDefault()
     setReservationError('')
     setSubmitting(true)
-
-    // Build WA message before async call (must be inside user gesture)
-    const waMsg = [
-      '📅 Бронь стола LUNA Café',
-      `👤 ${form.name}`,
-      `📞 ${form.phone}`,
-      `🕐 ${form.date} в ${form.time}`,
-      `👥 Гостей: ${form.guests}`,
-      form.requests ? `📝 ${form.requests}` : '',
-    ].filter(Boolean).join('\n')
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`
-
-    // Open WhatsApp immediately inside user gesture (before await)
-    window.open(waUrl, '_blank')
-
     try {
       await submitReservation({
         customerName: form.name,
@@ -106,22 +91,6 @@ function ReservationForm() {
             <p className="eyebrow"><span /> {t('reservation.successKicker', { name: reservation.name.split(' ')[0].toUpperCase() })}</p>
             <h3>{t('reservation.successTitleLineOne')}<br /><em>{t('reservation.successTitleLineTwo')}</em></h3>
             <p>{t('reservation.successMessage', { guests: t('reservation.guests', { count: Number(reservation.guests) }), date: reservationDate, time: reservation.time })}</p>
-            <a
-              href={`https://wa.me/996507113956?text=${encodeURIComponent([
-                '📅 Бронь стола LUNA Café',
-                `👤 ${reservation.name}`,
-                `📞 ${reservation.phone}`,
-                `🕐 ${reservation.date} в ${reservation.time}`,
-                `👥 Гостей: ${reservation.guests}`,
-                reservation.requests ? `📝 ${reservation.requests}` : '',
-              ].filter(Boolean).join('\n'))}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button button--dark"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}
-            >
-              📲 Подтвердить бронь в WhatsApp
-            </a>
             <button className="text-link" type="button" onClick={resetForm}>{t('reservation.another')} <ArrowRight size={15} /></button>
           </div>
         ) : (

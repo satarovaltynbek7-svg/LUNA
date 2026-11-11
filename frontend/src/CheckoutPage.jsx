@@ -34,27 +34,6 @@ export default function CheckoutPage() {
     if (submitting || !items.length) return
     setError('')
     setSubmitting(true)
-
-    // Build WA message from current form state before async call
-    const linesSummary = items
-      .map((item) => `• ${menuLabel(item, 'name', i18n.resolvedLanguage, t)} x${cart[item.id]}`)
-      .join('\n')
-    const waMsg = [
-      '🛒 Новый заказ LUNA Café',
-      `👤 ${form.name.trim()}`,
-      `📞 ${form.phone.trim()}`,
-      `📍 ${form.address.trim()}`,
-      '',
-      linesSummary,
-      '',
-      `💰 Итого: ${priceLabel(cartTotal, i18n.resolvedLanguage)}`,
-      form.note.trim() ? `📝 ${form.note.trim()}` : '',
-    ].filter(Boolean).join('\n')
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`
-
-    // Open WhatsApp immediately inside the user gesture (before await)
-    window.open(waUrl, '_blank')
-
     try {
       const result = await createCustomerOrder({
         customerName: form.name.trim(),
@@ -77,22 +56,6 @@ export default function CheckoutPage() {
   }
 
   if (order) {
-    const linesSummary = items
-      .map((item) => `• ${menuLabel(item, 'name', i18n.resolvedLanguage, t)} x${cart[item.id] ?? 1}`)
-      .join('\n')
-    const waMsg = [
-      '🛒 Новый заказ LUNA Café',
-      `🆔 #${order.id.slice(0, 8).toUpperCase()}`,
-      order.customerName ? `👤 ${order.customerName}` : '',
-      order.customerPhone ? `📞 ${order.customerPhone}` : '',
-      order.address ? `📍 ${order.address}` : '',
-      '',
-      linesSummary,
-      '',
-      `💰 Итого: ${priceLabel(order.total, i18n.resolvedLanguage)}`,
-    ].filter(Boolean).join('\n')
-    const waUrl = `https://wa.me/996507113956?text=${encodeURIComponent(waMsg)}`
-
     return (
       <main className="checkout-page editorial-page">
         <section className="checkout-card checkout-card--success">
@@ -101,16 +64,7 @@ export default function CheckoutPage() {
           <h1>{t('checkout.successTitle')}</h1>
           <p>{t('checkout.successMessage', { id: order.id })}</p>
           <strong>{priceLabel(order.total, i18n.resolvedLanguage)}</strong>
-          <a
-            className="button button--dark"
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}
-          >
-            📲 Подтвердить заказ в WhatsApp
-          </a>
-          <Link className="button button--dark" to="/menu" style={{ background: 'transparent', border: '1px solid currentColor' }}>
+          <Link className="button button--dark" to="/menu">
             {t('checkout.backToMenu')} <ArrowUpRight size={15} />
           </Link>
         </section>
