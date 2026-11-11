@@ -95,6 +95,13 @@ function Header() {
         <div className="header-tools">
           <LanguageSwitcher />
           <ThemeSwitcher />
+          {!user && (
+            <>
+              <button className="auth-header__login" type="button" onClick={() => openAuthModal('login')}>{t('auth.login')}</button>
+              <button className="auth-header__register" type="button" onClick={() => openAuthModal('register')}>{t('auth.register')}</button>
+            </>
+          )}
+          {user && <UserMenu />}
           <button className="header-cart" type="button" aria-label={t('cart.open', { count: cartCount })} onClick={openCart}>
             <ShoppingBag size={18} strokeWidth={1.7} />
             <span>{cartCount}</span>
