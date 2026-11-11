@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { MessageCircle, X, Send, ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const FAQ = {
   ru: [
@@ -102,15 +103,14 @@ function getBotReply(text, lang) {
 }
 
 export default function ChatBot() {
+  const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [started, setStarted] = useState(false)
   const bottomRef = useRef(null)
-  const lang = typeof window !== 'undefined'
-    ? (localStorage.getItem('i18nextLng') || 'ru').split('-')[0]
-    : 'ru'
-  const faqLang = FAQ[lang] ? lang : 'ru'
+  const rawLang = (i18n.resolvedLanguage || 'ru').split('-')[0]
+  const faqLang = FAQ[rawLang] ? rawLang : 'ru'
 
   useEffect(() => {
     if (open && !started) {
