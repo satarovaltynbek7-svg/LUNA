@@ -6,6 +6,13 @@ import { useCart } from './context/CartContext.jsx'
 import { menuLabel } from './context/CatalogContext.jsx'
 import { createCustomerOrder } from './services/adminService.js'
 
+const WHATSAPP_NUMBER = '996507113956'
+
+function openWhatsApp(message) {
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+  window.open(url, '_blank')
+}
+
 const initialForm = { name: '', phone: '', address: '', note: '' }
 
 function priceLabel(amount, language) {
@@ -41,6 +48,23 @@ export default function CheckoutPage() {
       setOrder(result.order)
       setForm(initialForm)
       clearCart()
+
+      // Open WhatsApp with order details
+      const linesSummary = items
+        .map((item) => `• ${menuLabel(item, 'name', i18n.resolvedLanguage, t)} x${cart[item.id]} = ${priceLabel(item.price * cart[item.id], i18n.resolvedLanguage)}`)
+        .join('\n')
+      const msg = [
+        '🛒 Новый заказ LUNA Café',
+        `👤 ${form.name.trim()}`,
+        `📞 ${form.phone.trim()}`,
+        `📍 ${form.address.trim()}`,
+        '',
+        linesSummary,
+        '',
+        `💰 Итого: ${priceLabel(result.order.total, i18n.resolvedLanguage)}`,
+        form.note.trim() ? `📝 ${form.note.trim()}` : '',
+      ].filter(Boolean).join('\n')
+      openWhatsApp(msg)
     } catch {
       setError(t('checkout.submitError'))
     } finally {

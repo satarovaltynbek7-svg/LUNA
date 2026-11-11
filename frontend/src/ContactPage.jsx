@@ -3,6 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { ArrowRight, ArrowUpRight, Check, Clock3, Instagram, MapPin, Phone } from 'lucide-react'
 import { submitReservation } from './services/adminService.js'
 
+const WHATSAPP_NUMBER = '996507113956'
+
+function openWhatsApp(message) {
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+  window.open(url, '_blank')
+}
+
 const initialForm = { name: '', phone: '', date: '', time: '', guests: '2', requests: '' }
 const today = new Date()
 const minimumDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
@@ -46,6 +53,17 @@ function ReservationForm() {
         specialRequests: form.requests,
       })
       setReservation({ ...form })
+
+      // Open WhatsApp with reservation details
+      const msg = [
+        '📅 Новая бронь LUNA Café',
+        `👤 ${form.name}`,
+        `📞 ${form.phone}`,
+        `🕐 ${form.date} в ${form.time}`,
+        `👥 Гостей: ${form.guests}`,
+        form.requests ? `📝 ${form.requests}` : '',
+      ].filter(Boolean).join('\n')
+      openWhatsApp(msg)
     } catch {
       setReservationError(t('reservation.submitError'))
     } finally {
