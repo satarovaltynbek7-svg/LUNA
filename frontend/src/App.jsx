@@ -31,8 +31,8 @@ import Profile from './pages/Profile.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import AuthModal from './components/auth/AuthModal.jsx'
 import UserMenu from './components/auth/UserMenu.jsx'
+import ChatBot from './components/ChatBot.jsx'
 import AuthNotice from './components/auth/AuthNotice.jsx'
-import ThemeSwitcher from './components/ThemeSwitcher.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import { useCatalog } from './context/CatalogContext.jsx'
 
@@ -312,6 +312,7 @@ export default function App() {
       <ScrollReveal />
       <AuthModal />
       <AuthNotice />
+      <ChatBot />
     </>
   )
 }
