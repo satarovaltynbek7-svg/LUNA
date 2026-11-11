@@ -34,6 +34,27 @@ export default function CheckoutPage() {
     if (submitting || !items.length) return
     setError('')
     setSubmitting(true)
+
+    // Build WA message from current form state before async call
+    const linesSummary = items
+      .map((item) => `• ${menuLabel(item, 'name', i18n.resolvedLanguage, t)} x${cart[item.id]}`)
+      .join('\n')
+    const waMsg = [
+      '🛒 Новый заказ LUNA Café',
+      `👤 ${form.name.trim()}`,
+      `📞 ${form.phone.trim()}`,
+      `📍 ${form.address.trim()}`,
+      '',
+      linesSummary,
+      '',
+      `💰 Итого: ${priceLabel(cartTotal, i18n.resolvedLanguage)}`,
+      form.note.trim() ? `📝 ${form.note.trim()}` : '',
+    ].filter(Boolean).join('\n')
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`
+
+    // Open WhatsApp immediately inside the user gesture (before await)
+    window.open(waUrl, '_blank')
+
     try {
       const result = await createCustomerOrder({
         customerName: form.name.trim(),

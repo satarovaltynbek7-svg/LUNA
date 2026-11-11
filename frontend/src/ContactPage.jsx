@@ -44,6 +44,21 @@ function ReservationForm() {
     event.preventDefault()
     setReservationError('')
     setSubmitting(true)
+
+    // Build WA message before async call (must be inside user gesture)
+    const waMsg = [
+      '📅 Бронь стола LUNA Café',
+      `👤 ${form.name}`,
+      `📞 ${form.phone}`,
+      `🕐 ${form.date} в ${form.time}`,
+      `👥 Гостей: ${form.guests}`,
+      form.requests ? `📝 ${form.requests}` : '',
+    ].filter(Boolean).join('\n')
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`
+
+    // Open WhatsApp immediately inside user gesture (before await)
+    window.open(waUrl, '_blank')
+
     try {
       await submitReservation({
         customerName: form.name,
