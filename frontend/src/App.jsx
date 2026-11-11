@@ -45,7 +45,6 @@ const navLinks = [
   ['navigation.gallery', '/gallery'],
   ['navigation.reviews', '/reviews'],
   ['navigation.contact', '/contact'],
-  ['navigation.join', '/contact#reservation'],
 ]
 
 function Brand({ light = false }) {
