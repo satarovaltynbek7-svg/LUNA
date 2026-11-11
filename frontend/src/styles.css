@@ -956,6 +956,7 @@ body * { transition: color .22s ease, background-color .22s ease, border-color .
 :root[data-theme='night'] .main-nav,
 :root[data-theme='night'] .menu-page,
 :root[data-theme='night'] .editorial-page,
+:root[data-theme='night'] .checkout-page,
 :root[data-theme='night'] .gallery-page,
 :root[data-theme='night'] .contact-page,
 :root[data-theme='night'] .reviews-page,
@@ -1000,6 +1001,7 @@ body * { transition: color .22s ease, background-color .22s ease, border-color .
 :root[data-theme='night'] .cart-drawer,
 :root[data-theme='night'] .qr-cart,
 :root[data-theme='night'] .qr-code-card,
+:root[data-theme='night'] .checkout-card,
 :root[data-theme='night'] .user-menu__dropdown {
   background-color: var(--night-card) !important;
 }
@@ -1589,7 +1591,7 @@ body * { transition: color .22s ease, background-color .22s ease, border-color .
 .checkout-submit { grid-column: 1 / -1; justify-self: start; min-width: 190px; border: 0; cursor: pointer; }
 .checkout-submit:disabled { opacity: .65; cursor: wait; }
 .checkout-error { grid-column: 1 / -1; margin: 0; color: #a45b48; font-size: 12px; }
-.checkout-summary { position: sticky; top: 24px; }
+.checkout-summary { position: sticky; top: 106px; }
 .checkout-summary h2 { margin-bottom: 20px; }
 .checkout-line, .checkout-total { display: flex; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 11px; }
 .checkout-line span { line-height: 1.55; }
