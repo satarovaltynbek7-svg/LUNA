@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { prisma } from '../db.js'
 import { ApiError, asyncHandler } from '../lib/errors.js'
 import { sendWhatsApp } from '../lib/whatsapp.js'
+import { sendTelegram } from '../lib/telegram.js'
 import { orderCreateSchema } from '../middleware/validation.js'
 
 const router = Router()
@@ -40,11 +41,12 @@ router.post('/', asyncHandler(async (req, res) => {
     })
   })
 
-  // Send WhatsApp notification (non-blocking)
+  // Send notifications (non-blocking)
   const linesSummary = order.lines
     .map((line) => `  • ${line.itemNames?.ru || line.itemNames?.en || '—'} x${line.quantity} = ${line.lineTotal} сом`)
     .join('\n')
-  const msg = [
+
+  const waMsg = [
     '🛒 *Новый заказ LUNA Café*',
     `🆔 #${order.id.slice(0, 8).toUpperCase()}`,
     input.customerName ? `👤 ${input.customerName}` : '',
@@ -58,7 +60,22 @@ router.post('/', asyncHandler(async (req, res) => {
     input.note ? `📝 ${input.note}` : '',
   ].filter(Boolean).join('\n')
 
-  sendWhatsApp(msg)
+  const tgMsg = [
+    '🛒 <b>Новый заказ LUNA Café</b>',
+    `🆔 #${order.id.slice(0, 8).toUpperCase()}`,
+    input.customerName ? `👤 ${input.customerName}` : '',
+    input.customerPhone ? `📞 ${input.customerPhone}` : '',
+    input.address ? `📍 ${input.address}` : '',
+    input.tableNumber ? `🪑 Стол №${input.tableNumber}` : '',
+    '',
+    linesSummary,
+    '',
+    `💰 <b>Итого: ${order.total} сом</b>`,
+    input.note ? `📝 ${input.note}` : '',
+  ].filter(Boolean).join('\n')
+
+  sendWhatsApp(waMsg)
+  sendTelegram(tgMsg)
 
   res.status(201).json({ order: { id: order.id, status: order.status, total: order.total } })
 }))

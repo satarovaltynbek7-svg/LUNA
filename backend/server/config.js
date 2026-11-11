@@ -20,6 +20,8 @@ const schema = z.object({
   SMTP_FROM: z.string().optional(),
   WHATSAPP_PHONE: z.string().optional(),
   WHATSAPP_APIKEY: z.string().optional(),
+  TELEGRAM_BOT_TOKEN: z.string().optional(),
+  TELEGRAM_CHAT_ID: z.string().optional(),
   NODE_ENV: z.string().default('development'),
   PORT: z.coerce.number().int().positive().default(3001),
 }).superRefine((env, context) => {
@@ -64,5 +66,6 @@ export const config = {
   googleEnabled: Boolean(parsed.data.GOOGLE_CLIENT_ID),
   smtpEnabled: Boolean(parsed.data.SMTP_HOST && parsed.data.SMTP_USER && parsed.data.SMTP_PASSWORD && parsed.data.SMTP_FROM),
   whatsappEnabled: Boolean(parsed.data.WHATSAPP_PHONE && parsed.data.WHATSAPP_APIKEY),
+  telegramEnabled: Boolean(parsed.data.TELEGRAM_BOT_TOKEN && parsed.data.TELEGRAM_CHAT_ID),
   production: parsed.data.NODE_ENV === 'production',
 }
