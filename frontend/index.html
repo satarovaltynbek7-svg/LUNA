@@ -6,7 +6,8 @@
     <meta name="theme-color" content="#f7f3ed" />
     <script>
       try {
-        document.documentElement.dataset.theme = localStorage.getItem('luna-theme') === 'night' ? 'night' : 'day';
+        const saved = localStorage.getItem('luna-theme');
+        document.documentElement.dataset.theme = (saved === 'night' || saved === 'day') ? saved : 'day';
       } catch {
         document.documentElement.dataset.theme = 'day';
       }

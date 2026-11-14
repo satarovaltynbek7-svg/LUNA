@@ -5,9 +5,10 @@ const THEME_STORAGE_KEY = 'luna-theme'
 
 function readStoredTheme() {
   try {
-    return window.localStorage.getItem(THEME_STORAGE_KEY) === 'night' ? 'night' : 'day'
+    const saved = window.localStorage.getItem(THEME_STORAGE_KEY)
+    if (saved === 'night' || saved === 'day') return saved
+    return 'day'
   } catch (error) {
-    console.warn('Could not read the saved theme preference.', error)
     return 'day'
   }
 }
