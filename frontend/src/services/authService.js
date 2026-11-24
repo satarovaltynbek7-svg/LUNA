@@ -25,6 +25,14 @@ export async function changePassword({ token, password }) {
   return apiRequest('/auth/reset-password', { method: 'POST', body: { token, password } })
 }
 
+export async function updatePassword({ currentPassword, newPassword }) {
+  const result = await apiRequest('/auth/password', {
+    method: 'PATCH',
+    body: { currentPassword, newPassword },
+  })
+  return result.user
+}
+
 export async function signOutUser() {
   await apiRequest('/auth/logout', { method: 'POST', body: {} })
 }

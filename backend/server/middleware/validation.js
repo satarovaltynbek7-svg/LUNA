@@ -30,6 +30,11 @@ export function parseId(value) {
 }
 
 export const emailSchema = z.object({ email: z.string().trim().email().max(320).transform((value) => value.toLowerCase()) })
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(128),
+  newPassword: z.string().min(8).max(128).regex(/[A-Za-z]/).regex(/\d/),
+})
 export const resetSchema = z.object({
   token: z.string().length(64).regex(/^[a-f0-9]+$/),
   password: z.string().min(8).max(128).regex(/[A-Za-z]/).regex(/\d/),

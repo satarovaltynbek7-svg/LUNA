@@ -8,7 +8,7 @@ import { prisma } from '../db.js'
 import { ApiError, asyncHandler } from '../lib/errors.js'
 import { sendEmail } from '../lib/email.js'
 import { clearSession, issueSession, optionalAuth, publicUser, requireAuth } from '../middleware/auth.js'
-import { emailSchema, loginSchema, registerSchema, resetSchema } from '../middleware/validation.js'
+import { emailSchema, loginSchema, registerSchema, resetSchema, changePasswordSchema } from '../middleware/validation.js'
 
 const router = Router()
 const googleOAuth = config.googleEnabled
@@ -49,6 +49,20 @@ router.post('/logout', optionalAuth, asyncHandler(async (req, res) => {
 router.get('/me', requireAuth, (req, res) => {
   res.json({ user: publicUser(req.user) })
 })
+
+router.patch('/password', requireAuth, asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = changePasswordSchema.parse(req.body)
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } })
+  const matches = user?.passwordHash ? await bcrypt.compare(currentPassword, user.passwordHash) : false
+  if (!matches) throw new ApiError(401, 'invalid_credentials')
+  const passwordHash = await bcrypt.hash(newPassword, 12)
+  const updated = await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash, sessionVersion: { increment: 1 } },
+  })
+  issueSession(res, updated)
+  res.json({ user: publicUser(updated) })
+}))
 
 router.post('/forgot-password', asyncHandler(async (req, res) => {
   const { email } = emailSchema.parse(req.body)

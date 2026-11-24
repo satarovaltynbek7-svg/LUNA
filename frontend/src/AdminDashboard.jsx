@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  ArrowUpRight, BarChart3, Check, ChevronLeft, ClipboardList, Image, LayoutDashboard,
+  ArrowUpRight, BarChart3, Check, ChevronLeft, ClipboardList, Image, KeyRound, LayoutDashboard,
   LogOut, Menu as MenuIcon, MessageCircle, Pencil, Printer, QrCode,
   Settings, Trash2, Users, UtensilsCrossed, X,
 } from 'lucide-react'
@@ -18,6 +18,7 @@ import {
   fetchAdminOrders, fetchAdminReservations, fetchAdminContent, saveBanner, saveGalleryImage,
   saveMenuCategory, saveMenuItem, saveSiteContent, updateOrderStatus, updateReservationStatus,
 } from './services/adminService.js'
+import { updatePassword } from './services/authService.js'
 
 const OWNER_EMAIL = 'asema008@gmail.com'
 const localeCodes = { ru: 'ru-RU', ky: 'ky-KG', en: 'en-US' }
@@ -31,6 +32,7 @@ const sections = [
   ['gallery', Image],
   ['content', Settings],
   ['qr', QrCode],
+  ['settings', KeyRound],
 ]
 const orderStatuses = ['NEW', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELLED']
 const reservationStatuses = ['PENDING', 'CONFIRMED', 'REJECTED', 'COMPLETED']
@@ -442,6 +444,99 @@ function ContentSection({ data, refresh, notify }) {
   )
 }
 
+function SettingsSection({ user, refreshUser, notify }) {
+  const { t } = useTranslation()
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  async function handleChangePassword(event) {
+    event.preventDefault()
+    if (newPassword !== confirmPassword) {
+      notify('', 'passwords_do_not_match')
+      return
+    }
+    setBusy(true)
+    try {
+      await updatePassword({ currentPassword, newPassword })
+      await refreshUser()
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      notify('Пароль успешно изменён')
+    } catch (error) {
+      notify('', error.code || 'request_failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <section className="admin-section">
+      <div className="admin-section__heading">
+        <p className="eyebrow"><span /> Настройки</p>
+        <h1>Настройки аккаунта</h1>
+      </div>
+      <div className="admin-admin-grid">
+        <div className="admin-panel-card">
+          <div className="admin-card-heading"><h2>Информация об аккаунте</h2></div>
+          <div className="admin-form">
+            <label className="admin-field">
+              <span>Email</span>
+              <input type="email" value={user?.email || ''} readOnly style={{ opacity: 0.6 }} />
+            </label>
+            <label className="admin-field">
+              <span>Имя</span>
+              <input type="text" value={user?.fullName || ''} readOnly style={{ opacity: 0.6 }} />
+            </label>
+            <label className="admin-field">
+              <span>Роль</span>
+              <input type="text" value={user?.role || ''} readOnly style={{ opacity: 0.6 }} />
+            </label>
+          </div>
+        </div>
+
+        <form className="admin-panel-card admin-form" onSubmit={handleChangePassword}>
+          <div className="admin-card-heading"><h2>Изменить пароль</h2></div>
+          <AdminField
+            label="Текущий пароль"
+            type="password"
+            value={currentPassword}
+            onChange={setCurrentPassword}
+            autoComplete="current-password"
+            required
+          />
+          <AdminField
+            label="Новый пароль"
+            type="password"
+            value={newPassword}
+            onChange={setNewPassword}
+            autoComplete="new-password"
+            required
+            minLength={8}
+          />
+          <AdminField
+            label="Подтвердите новый пароль"
+            type="password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            autoComplete="new-password"
+            required
+            minLength={8}
+          />
+          <p style={{ fontSize: '10px', color: 'var(--muted)', margin: '0' }}>
+            Пароль должен быть не менее 8 символов и содержать букву и цифру.
+          </p>
+          <button className="button button--dark" type="submit" disabled={busy}>
+            {busy ? 'Сохранение…' : 'Изменить пароль'} <Check size={15} />
+          </button>
+        </form>
+      </div>
+    </section>
+  )
+}
+
 function QRSection() {
   const { t } = useTranslation()
   const [tableNumber, setTableNumber] = useState('')
@@ -524,7 +619,7 @@ export default function AdminDashboard() {
   }, [loaders, section, sectionPages])
 
   useEffect(() => {
-    if (isAdmin && section !== 'reviews' && section !== 'qr') refreshSection(section)
+    if (isAdmin && section !== 'reviews' && section !== 'qr' && section !== 'settings') refreshSection(section)
   }, [isAdmin, section, refreshSection])
 
   async function ownerLogin(event) {
@@ -608,6 +703,7 @@ export default function AdminDashboard() {
         {section === 'gallery' && <GallerySection images={data.gallery?.images || []} refresh={() => refreshSection('gallery')} notify={notify} />}
         {section === 'content' && <ContentSection data={data.content || { content: [], banners: [] }} refresh={() => refreshSection('content')} notify={notify} />}
         {section === 'qr' && <QRSection />}
+        {section === 'settings' && <SettingsSection user={user} refreshUser={refreshUser} notify={notify} />}
       </div>
     </main>
   )
