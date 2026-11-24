@@ -14,7 +14,7 @@ export async function sendEmail({ to, subject, text, html }) {
         'api-key': config.BREVO_API_KEY,
       },
       body: JSON.stringify({
-        sender: { name: 'LUNA Café', email: 'c4b0b5001@smtp-brevo.com' },
+        sender: { name: 'LUNA Café', email: 'satarovaltynbek7@gmail.com' },
         to: [{ email: to }],
         subject,
         textContent: text,
