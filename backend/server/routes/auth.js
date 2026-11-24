@@ -2,25 +2,17 @@ import { randomBytes, createHash, timingSafeEqual } from 'node:crypto'
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import { OAuth2Client } from 'google-auth-library'
-import nodemailer from 'nodemailer'
 import { z } from 'zod'
 import { config } from '../config.js'
 import { prisma } from '../db.js'
 import { ApiError, asyncHandler } from '../lib/errors.js'
+import { sendEmail } from '../lib/email.js'
 import { clearSession, issueSession, optionalAuth, publicUser, requireAuth } from '../middleware/auth.js'
 import { emailSchema, loginSchema, registerSchema, resetSchema } from '../middleware/validation.js'
 
 const router = Router()
 const googleOAuth = config.googleEnabled
   ? new OAuth2Client(config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET, config.GOOGLE_CALLBACK_URL)
-  : null
-const resetLimiterTransport = config.smtpEnabled
-  ? nodemailer.createTransport({
-    host: config.SMTP_HOST,
-    port: config.SMTP_PORT,
-    secure: config.SMTP_SECURE === 'true',
-    auth: { user: config.SMTP_USER, pass: config.SMTP_PASSWORD },
-  })
   : null
 
 const hashToken = (token) => createHash('sha256').update(token).digest('hex')
@@ -60,7 +52,7 @@ router.get('/me', requireAuth, (req, res) => {
 
 router.post('/forgot-password', asyncHandler(async (req, res) => {
   const { email } = emailSchema.parse(req.body)
-  if (!resetLimiterTransport) throw new ApiError(503, 'password_reset_unavailable')
+  if (!config.brevoEnabled) throw new ApiError(503, 'password_reset_unavailable')
   const user = await prisma.user.findUnique({ where: { email } })
   if (user?.passwordHash) {
     const token = randomBytes(32).toString('hex')
@@ -74,8 +66,7 @@ router.post('/forgot-password', asyncHandler(async (req, res) => {
     const resetUrl = new URL('/reset-password', config.FRONTEND_URL)
     resetUrl.searchParams.set('token', token)
     try {
-      await resetLimiterTransport.sendMail({
-        from: config.SMTP_FROM,
+      await sendEmail({
         to: user.email,
         subject: 'Reset your LUNA Café password',
         text: `Use this link within one hour to reset your password: ${resetUrl.href}`,
